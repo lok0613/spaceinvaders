@@ -38,11 +38,12 @@ function Game() {
         gameHeight: 500,
         fps: 50,
         debugMode: false,
-        invaderRanks: [0, 5, 7],
-        invaderFiles: [0, 11, 15],
+        invaderRanks: [0, 5, 7], // level 1, 2, 3
+        invaderFiles: [0, 11, 15], // level 1, 2, 3
         shipSpeed: 120,
         levelDifficultyMultiplier: 0.2,
-        pointsPerInvader: 5
+        pointsPerInvader: 5,
+        maxGameTime: 90 // seconds
     };
 
     //  All state is in the variables below.
@@ -55,6 +56,8 @@ function Game() {
     this.levelName = ['', 'Easy', 'Difficult'];
     this.level = 1;
     this.pendingLevel = 1;
+    this.gameTimer = null;
+    this.remainTime = 0;
 
     //  The state stack.
     this.stateStack = [];
@@ -260,10 +263,10 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
 WelcomeState.prototype.keyDown = function(game, keyCode) {
     if (keyCode == 38) /*up*/ {
         game.pendingLevel = 1;
-        gameLoop(game);
+        GameLoop(game);
     } else if (keyCode == 40) /*down*/ {
         game.pendingLevel = 2;
-        gameLoop(game);        
+        GameLoop(game);        
     } else if (keyCode == 13) /*enter*/ {
         //  Space starts the game.
         game.level = game.pendingLevel;
@@ -302,8 +305,8 @@ GameOverState.prototype.keyDown = function(game, keyCode) {
         //  Space restarts the game.
         game.lives = 3;
         game.score = 0;
-        game.level = 1;
-        game.moveToState(new LevelIntroState(1));
+        // game.level = 1;
+        game.moveToState(new LevelIntroState(game.level));
     }
 };
 
@@ -323,6 +326,26 @@ function PlayState(config, level) {
     this.invaders = [];
     this.rockets = [];
     this.bombs = [];
+}
+
+PlayState.prototype.startGameTimer = function(game) {
+    game.remainTime = game.config.maxGameTime;
+    var thisState = this;
+    this.gameTimer = setInterval( function () {
+        game.remainTime--;
+        if (game.remainTime<0) {
+            thisState.stopGameTimer(game);
+            game.moveToState(new GameOverState());
+        }
+    }, 1000);
+}
+
+PlayState.prototype.stopGameTimer = function(game) {
+    if (this.gameTimer) {
+        clearTimeout(this.gameTimer);        
+        this.gameTimer = null;
+        this.remainTime = 0;
+    }
 }
 
 PlayState.prototype.enter = function(game) {
@@ -359,6 +382,9 @@ PlayState.prototype.enter = function(game) {
     this.invaderCurrentVelocity = this.invaderInitialVelocity;
     this.invaderVelocity = {x: -this.invaderInitialVelocity, y:0};
     this.invaderNextVelocity = null;
+
+    this.stopGameTimer(game);
+    this.startGameTimer(game);
 };
 
 PlayState.prototype.update = function(game, dt) {
@@ -581,9 +607,10 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     var info = "Lives: " + game.lives;
     ctx.textAlign = "left";
     ctx.fillText(info, game.gameBounds.left, textYpos);
-    info = "Score: " + game.score + ", Level: " + game.levelName[game.level];
+    info = "Score: " + game.score + ", Level: " + game.levelName[game.level] + ", Remain Time: " + game.remainTime;
     ctx.textAlign = "right";
     ctx.fillText(info, game.gameBounds.right, textYpos);
+
 
     //  If we're in debug mode, draw bounds.
     if(this.config.debugMode) {
