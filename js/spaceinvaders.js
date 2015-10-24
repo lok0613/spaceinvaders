@@ -34,12 +34,12 @@ function Game() {
         invaderDropDistance: 20,
         rocketVelocity: 120,
         rocketMaxFireRate: 2,
-        gameWidth: 400,
-        gameHeight: 300,
+        gameWidth: 600,
+        gameHeight: 500,
         fps: 50,
         debugMode: false,
-        invaderRanks: 5,
-        invaderFiles: 10,
+        invaderRanks: [0, 5, 7],
+        invaderFiles: [0, 11, 15],
         shipSpeed: 120,
         levelDifficultyMultiplier: 0.2,
         pointsPerInvader: 5
@@ -52,7 +52,9 @@ function Game() {
     this.gameBounds = {left: 0, top: 0, right: 0, bottom: 0};
     this.intervalId = 0;
     this.score = 0;
+    this.levelName = ['', 'Easy', 'Difficult'];
     this.level = 1;
+    this.pendingLevel = 1;
 
     //  The state stack.
     this.stateStack = [];
@@ -225,24 +227,46 @@ WelcomeState.prototype.update = function (game, dt) {
 };
 
 WelcomeState.prototype.draw = function(game, dt, ctx) {
+    var textPosition = {
+        x: game.width / 2,
+        y: game.height / 2 - 40
+    };
+
+    var alertChoosingLevel = function (game, ctx, thisLevel) {
+        if ( game.pendingLevel==thisLevel ) {
+            ctx.fillStyle = '#00ff00';
+            ctx.font="bold 25px Arial";
+       } else {
+            ctx.fillStyle = '#ffffff';
+            ctx.font="20px Arial";
+        }
+    }
 
     //  Clear the background.
     ctx.clearRect(0, 0, game.width, game.height);
 
-    ctx.font="30px Arial";
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline="center"; 
     ctx.textAlign="center"; 
-    ctx.fillText("Space Invaders", game.width / 2, game.height/2 - 40); 
-    ctx.font="16px Arial";
+    ctx.font="40px Arial";
+    ctx.fillText("Space Invaders", textPosition.x, textPosition.y); 
 
-    ctx.fillText("Press 'Space' to start.", game.width / 2, game.height/2); 
+    alertChoosingLevel(game, ctx, 1);
+    ctx.fillText("Level Easy", textPosition.x, textPosition.y + 60); 
+    alertChoosingLevel(game, ctx, 2);
+    ctx.fillText("Level Difficult", textPosition.x, textPosition.y + 100); 
 };
 
 WelcomeState.prototype.keyDown = function(game, keyCode) {
-    if(keyCode == 32) /*space*/ {
+    if (keyCode == 38) /*up*/ {
+        game.pendingLevel = 1;
+        gameLoop(game);
+    } else if (keyCode == 40) /*down*/ {
+        game.pendingLevel = 2;
+        gameLoop(game);        
+    } else if (keyCode == 13) /*enter*/ {
         //  Space starts the game.
-        game.level = 1;
+        game.level = game.pendingLevel;
         game.score = 0;
         game.lives = 3;
         game.moveToState(new LevelIntroState(game.level));
@@ -268,7 +292,7 @@ GameOverState.prototype.draw = function(game, dt, ctx) {
     ctx.textAlign="center"; 
     ctx.fillText("Game Over!", game.width / 2, game.height/2 - 40); 
     ctx.font="16px Arial";
-    ctx.fillText("You scored " + game.score + " and got to level " + game.level, game.width / 2, game.height/2);
+    ctx.fillText("You scored " + game.score + " and got to level " + game.levelName[game.level], game.width / 2, game.height/2);
     ctx.font="16px Arial";
     ctx.fillText("Press 'Space' to play again.", game.width / 2, game.height/2 + 40);   
 };
@@ -320,13 +344,13 @@ PlayState.prototype.enter = function(game) {
     this.bombMaxVelocity = this.config.bombMaxVelocity + (levelMultiplier * this.config.bombMaxVelocity);
 
     //  Create the invaders.
-    var ranks = this.config.invaderRanks;
-    var files = this.config.invaderFiles;
+    var ranks = this.config.invaderRanks[this.level];
+    var files = this.config.invaderFiles[this.level];
     var invaders = [];
     for(var rank = 0; rank < ranks; rank++){
         for(var file = 0; file < files; file++) {
             invaders.push(new Invader(
-                (game.width / 2) + ((files/2 - file) * 200 / files),
+                (game.width / 2) + ((files/2 - file) * ranks * 60 / files),
                 (game.gameBounds.top + rank * 20),
                 rank, file, 'Invader'));
         }
@@ -471,7 +495,7 @@ PlayState.prototype.update = function(game, dt) {
     }
 
     //  Give each front rank invader a chance to drop a bomb.
-    for(var i=0; i<this.config.invaderFiles; i++) {
+    for(var i=0; i<this.config.invaderFiles[this.level]; i++) {
         var invader = frontRankInvaders[i];
         if(!invader) continue;
         var chance = this.bombRate * dt;
@@ -557,7 +581,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     var info = "Lives: " + game.lives;
     ctx.textAlign = "left";
     ctx.fillText(info, game.gameBounds.left, textYpos);
-    info = "Score: " + game.score + ", Level: " + game.level;
+    info = "Score: " + game.score + ", Level: " + game.levelName[game.level];
     ctx.textAlign = "right";
     ctx.fillText(info, game.gameBounds.right, textYpos);
 
@@ -668,7 +692,7 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline="middle"; 
     ctx.textAlign="center"; 
-    ctx.fillText("Level " + this.level, game.width / 2, game.height/2);
+    ctx.fillText("Level " + game.levelName[this.level], game.width / 2, game.height/2);
     ctx.font="24px Arial";
     ctx.fillText("Ready in " + this.countdownMessage, game.width / 2, game.height/2 + 36);      
     return;
