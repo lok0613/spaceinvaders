@@ -297,7 +297,7 @@ GameOverState.prototype.draw = function(game, dt, ctx) {
     ctx.font="16px Arial";
     ctx.fillText("You scored " + game.score + " and got to level " + game.levelName[game.level], game.width / 2, game.height/2);
     ctx.font="16px Arial";
-    ctx.fillText("Press 'Space' to play again.", game.width / 2, game.height/2 + 40);   
+    ctx.fillText("Press 'Space' to reset game.", game.width / 2, game.height/2 + 40);   
 };
 
 GameOverState.prototype.keyDown = function(game, keyCode) {
@@ -305,8 +305,7 @@ GameOverState.prototype.keyDown = function(game, keyCode) {
         //  Space restarts the game.
         game.lives = 3;
         game.score = 0;
-        // game.level = 1;
-        game.moveToState(new LevelIntroState(game.level));
+        game.moveToState(new WelcomeState());
     }
 };
 
