@@ -32,8 +32,8 @@ function Game() {
         invaderInitialVelocity: 25,
         invaderAcceleration: 0,
         invaderDropDistance: 20,
-        rocketVelocity: 120,
-        rocketMaxFireRate: 2,
+        rocketVelocity: 400,
+        rocketMaxFireRate: 1,
         gameWidth: 600,
         gameHeight: 500,
         fps: 50,
@@ -267,7 +267,7 @@ WelcomeState.prototype.keyDown = function(game, keyCode) {
     } else if (keyCode == 40) /*down*/ {
         game.pendingLevel = 2;
         GameLoop(game);        
-    } else if (keyCode == 13) /*enter*/ {
+    } else if (keyCode == 13 || keyCode == 32) /*enter or space*/ {
         //  Space starts the game.
         game.level = game.pendingLevel;
         game.score = 0;
@@ -382,7 +382,7 @@ PlayState.prototype.enter = function(game) {
     this.invaderVelocity = {x: -this.invaderInitialVelocity, y:0};
     this.invaderNextVelocity = null;
 
-    this.stopGameTimer(game);
+    // this.stopGameTimer(game);
     this.startGameTimer(game);
 };
 
@@ -575,8 +575,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.clearRect(0, 0, game.width, game.height);
     
     //  Draw ship.
-    ctx.fillStyle = '#999999';
-    ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
+    ctx.drawImage(this.ship.img, this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
 
     //  Draw invaders.
     ctx.fillStyle = '#006600';
@@ -586,21 +585,21 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     }
 
     //  Draw bombs.
-    ctx.fillStyle = '#ff5555';
+    ctx.fillStyle = '#FE2E2E';
     for(var i=0; i<this.bombs.length; i++) {
         var bomb = this.bombs[i];
-        ctx.fillRect(bomb.x - 2, bomb.y - 2, 4, 4);
+        ctx.fillRect(bomb.x - 2, bomb.y - 2, 5, 5);
     }
 
     //  Draw rockets.
-    ctx.fillStyle = '#ff0000';
+    ctx.fillStyle = '#F3F781';
     for(var i=0; i<this.rockets.length; i++) {
         var rocket = this.rockets[i];
-        ctx.fillRect(rocket.x, rocket.y - 2, 1, 4);
+        ctx.fillRect(rocket.x, rocket.y - 2, 3, 16);
     }
 
     //  Draw info.
-    var textYpos = game.gameBounds.bottom + ((game.height - game.gameBounds.bottom) / 2) + 14/2;
+    var textYpos = 20;
     ctx.font="14px Arial";
     ctx.fillStyle = '#ffffff';
     var info = "Lives: " + game.lives;
@@ -735,8 +734,11 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
 function Ship(x, y) {
     this.x = x;
     this.y = y;
-    this.width = 20;
-    this.height = 16;
+    this.width = 40;
+    this.height = 36;
+    this.img = new Image();
+    this.img.src = 'img/ship.svg';
+
 }
 
 /*
