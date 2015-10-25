@@ -28,10 +28,10 @@ function Game() {
     this.config = {
         bombRate: 0.05,
         bombMinVelocity: 50,
-        bombMaxVelocity: 50,
+        bombMaxVelocity: 200,
         invaderInitialVelocity: 25,
         invaderAcceleration: 0,
-        invaderDropDistance: 20,
+        invaderDropDistance: 40,
         rocketVelocity: 400,
         rocketMaxFireRate: 1,
         gameWidth: 600,
