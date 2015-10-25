@@ -42,7 +42,7 @@ function Game() {
         invaderFiles: [0, 11, 15], // level 1, 2, 3
         shipSpeed: 120,
         levelDifficultyMultiplier: 0.2,
-        pointsPerInvader: 5,
+        pointsMultiplier: 10,
         maxGameTime: 90 // seconds
     };
 
@@ -374,7 +374,7 @@ PlayState.prototype.enter = function(game) {
             invaders.push(new Invader(
                 (game.width / 2) + ((files/2 - file) * ranks * 60 / files),
                 (game.gameBounds.top + rank * 20),
-                rank, file, 'Invader'));
+                rank, file, 'Invader', (ranks-rank) * this.config.pointsMultiplier ));
         }
     }
     this.invaders = invaders;
@@ -497,7 +497,8 @@ PlayState.prototype.update = function(game, dt) {
                 //  this rocket again.
                 this.rockets.splice(j--, 1);
                 bang = true;
-                game.score += this.config.pointsPerInvader;
+                game.score += invader.points;
+                console.log('points', invader.points);
                 break;
             }
         }
@@ -771,7 +772,7 @@ function Bomb(x, y, velocity) {
     Invader's have position, type, rank/file and that's about it. 
 */
 
-function Invader(x, y, rank, file, type) {
+function Invader(x, y, rank, file, type, points) {
     this.x = x;
     this.y = y;
     this.rank = rank;
@@ -779,6 +780,7 @@ function Invader(x, y, rank, file, type) {
     this.type = type;
     this.width = 18;
     this.height = 14;
+    this.points = points;
 }
 
 /*
