@@ -26,12 +26,12 @@ function Game() {
 
     //  Set the initial config.
     this.config = {
-        bombRate: 0.2,
+        bombRate: 0.15,
         bombMinVelocity: 50,
         bombMaxVelocity: 200,
-        invaderInitialVelocity: 70,
+        invaderInitialVelocity: 50,
         invaderAcceleration: 0,
-        invaderDropDistance: 40,
+        invaderDropDistance: 30,
         rocketVelocity: 400,
         rocketMaxFireRate: 2,
         gameWidth: 600,
@@ -40,12 +40,12 @@ function Game() {
         debugMode: false,
         invaderRanks: [0, 5, 7], // level 1, 2, 3
         invaderFiles: [0, 11, 15], // level 1, 2, 3
-        shipSpeed: 120,
+        shipSpeed: 180,
         levelDifficultyMultiplier: 0.2,
         minObstacle: 1,
         maxObstacle: 5,
         pointsMultiplier: 10,
-        maxGameTime: 90 // seconds
+        maxGameTime: 60 // seconds
     };
 
     //  All state is in the variables below.
@@ -336,6 +336,7 @@ PlayState.prototype.startGameTimer = function(game) {
         game.remainTime--;
         if (game.remainTime<0) {
             thisState.stopGameTimer(game);
+            console.log("Gameover because of times up!");
             game.moveToState(new GameOverState());
         }
     }, 1000);
@@ -393,7 +394,6 @@ PlayState.prototype.enter = function(game) {
             game.gameBounds.bottom - 100
             ));
     }
-    console.log('obstacles', obstacles);
     this.obstacles = obstacles;
 
     this.startGameTimer(game);
@@ -511,7 +511,6 @@ PlayState.prototype.update = function(game, dt) {
                 this.rockets.splice(j--, 1);
                 bang = true;
                 game.score += invader.points;
-                console.log('points', invader.points);
                 break;
             }
         }
@@ -591,6 +590,21 @@ PlayState.prototype.update = function(game, dt) {
             }
         }
     }
+    
+    //  Check for invader/obstacle collisions.
+    for(var i=0; i<this.invaders.length; i++) {
+        var invader = this.invaders[i];
+        for(var j=0; j<this.obstacles.length; j++) {
+            var obstacle = this.obstacles[j];
+            if((invader.x + invader.width/2) > (obstacle.x - obstacle.width/2) && 
+                (invader.x - invader.width/2) < (obstacle.x + obstacle.width/2) &&
+                (invader.y + invader.height/2) > (obstacle.y - obstacle.height/2) &&
+                (invader.y - invader.height/2) < (obstacle.y + obstacle.height/2)) {
+                this.obstacles.splice(j--, 1);
+                game.sounds.playSound('explosion');
+            }
+        }
+    }
 
     //  Check for invader/ship collisions.
     for(var i=0; i<this.invaders.length; i++) {
@@ -600,6 +614,7 @@ PlayState.prototype.update = function(game, dt) {
             (invader.y + invader.height/2) > (this.ship.y - this.ship.height/2) &&
             (invader.y - invader.height/2) < (this.ship.y + this.ship.height/2)) {
             //  Dead by collision!
+            console.log('dead',invader, this.ship);
             game.lives = 0;
             game.sounds.playSound('explosion');
         }
@@ -607,6 +622,7 @@ PlayState.prototype.update = function(game, dt) {
 
     //  Check for failure
     if(game.lives <= 0) {
+        console.log("Gameover because of dead!");
         game.moveToState(new GameOverState());
     }
 
