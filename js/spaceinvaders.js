@@ -33,7 +33,7 @@ function Game() {
         invaderAcceleration: 0,
         invaderDropDistance: 40,
         rocketVelocity: 400,
-        rocketMaxFireRate: 1,
+        rocketMaxFireRate: 2,
         gameWidth: 600,
         gameHeight: 500,
         fps: 50,
@@ -42,8 +42,8 @@ function Game() {
         invaderFiles: [0, 11, 15], // level 1, 2, 3
         shipSpeed: 120,
         levelDifficultyMultiplier: 0.2,
-        minOpstacle: 1,
-        maxOpstacle: 5,
+        minObstacle: 1,
+        maxObstacle: 5,
         pointsMultiplier: 10,
         maxGameTime: 90 // seconds
     };
@@ -384,17 +384,17 @@ PlayState.prototype.enter = function(game) {
     this.invaderVelocity = {x: -this.invaderInitialVelocity, y:0};
     this.invaderNextVelocity = null;
 
-    //  Create the opstacles
-    var opstaclesCount = Math.floor((Math.random() * this.config.maxOpstacle) + this.config.minOpstacle);
-    var opstacles = [];
-    for(var ops = 0; ops < opstaclesCount; ops++) {
-        opstacles.push(new Opstacle(
-            game.gameBounds.left + (game.gameBounds.right-game.gameBounds.left)/opstaclesCount*ops + 50,
+    //  Create the obstacles
+    var obstaclesCount = Math.floor((Math.random() * this.config.maxObstacle) + this.config.minObstacle);
+    var obstacles = [];
+    for(var ops = 0; ops < obstaclesCount; ops++) {
+        obstacles.push(new Obstacle(
+            game.gameBounds.left + (game.gameBounds.right-game.gameBounds.left)/obstaclesCount*ops + 50,
             game.gameBounds.bottom - 100
             ));
     }
-    console.log('opstacles', opstacles);
-    this.opstacles = opstacles;
+    console.log('obstacles', obstacles);
+    this.obstacles = obstacles;
 
     this.startGameTimer(game);
 };
@@ -557,35 +557,35 @@ PlayState.prototype.update = function(game, dt) {
                 
     }
 
-    //  Check for bomb/opstacle collisions.
+    //  Check for bomb/obstacle collisions.
     for(var i=0; i<this.bombs.length; i++) {
         var bomb = this.bombs[i];
-        for(var j=0; j<this.opstacles.length; j++) {
-            var opstacle = this.opstacles[j];
-            if(bomb.x >= (opstacle.x) && bomb.x <= (opstacle.x + opstacle.width/2) &&
-                    bomb.y >= (opstacle.y - opstacle.height/2) && bomb.y <= (opstacle.y + opstacle.height/2)) {
+        for(var j=0; j<this.obstacles.length; j++) {
+            var obstacle = this.obstacles[j];
+            if(bomb.x >= (obstacle.x) && bomb.x <= (obstacle.x + obstacle.width) &&
+                    bomb.y >= (obstacle.y - obstacle.height/2) && bomb.y <= (obstacle.y + obstacle.height/2)) {
                 this.bombs.splice(i--, 1);
                 bang = true;
-                opstacle.lives--;
-                if (opstacle.lives<=0) {
-                    this.opstacles.splice(j--, 1);
+                obstacle.lives--;
+                if (obstacle.lives<=0) {
+                    this.obstacles.splice(j--, 1);
                     game.sounds.playSound('explosion');
                 }
             }
         }
     }
 
-    //  Check for rocket/opstacle collisions.
+    //  Check for rocket/obstacle collisions.
     for(var i=0; i<this.rockets.length; i++) {
         var rocket = this.rockets[i];
-        for(var j=0; j<this.opstacles.length; j++) {
-            var opstacle = this.opstacles[j];
-            if(rocket.x >= (opstacle.x) && rocket.x <= (opstacle.x + opstacle.width) &&
-                    rocket.y >= (opstacle.y - opstacle.height/2) && rocket.y <= (opstacle.y + opstacle.height/2)) {
+        for(var j=0; j<this.obstacles.length; j++) {
+            var obstacle = this.obstacles[j];
+            if(rocket.x >= (obstacle.x) && rocket.x <= (obstacle.x + obstacle.width) &&
+                    rocket.y >= (obstacle.y - obstacle.height/2) && rocket.y <= (obstacle.y + obstacle.height/2)) {
                 this.rockets.splice(i--, 1);
-                opstacle.lives--;
-                if (opstacle.lives<=0) {
-                    this.opstacles.splice(j--, 1);
+                obstacle.lives--;
+                if (obstacle.lives<=0) {
+                    this.obstacles.splice(j--, 1);
                     game.sounds.playSound('explosion');
                 }
             }
@@ -647,10 +647,10 @@ PlayState.prototype.draw = function(game, dt, ctx) {
         ctx.fillRect(rocket.x, rocket.y - 2, 3, 16);
     }
 
-    // Draw opstacles.
-    for(var i=0; i<this.opstacles.length; i++) {
-        var opstacle = this.opstacles[i];
-        ctx.fillRect(opstacle.x, opstacle.y, opstacle.width, opstacle.height);
+    // Draw obstacles.
+    for(var i=0; i<this.obstacles.length; i++) {
+        var obstacle = this.obstacles[i];
+        ctx.drawImage(obstacle.img(), obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     }
 
     //  Draw info.
@@ -838,17 +838,22 @@ function Invader(x, y, rank, file, type, points) {
 }
 
 /*
-    Opstacle
+    Obstacle
 
-    Opstacle have have 3 lives, ship and invader can shoot it
+    Obstacle have have 3 lives, ship and invader can shoot it
 */
 
-function Opstacle(x, y) {
+function Obstacle(x, y) {
     this.x = x;
     this.y = y;
     this.width = 50;
     this.height = 50;
     this.lives = 3;
+    this.img = function () {
+        var image = new Image();
+        image.src = 'img/obstacle_'+(this.lives)+'.png';
+        return image;
+    };
 }
 
 /*
