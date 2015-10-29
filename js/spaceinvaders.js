@@ -26,10 +26,10 @@ function Game() {
 
     //  Set the initial config.
     this.config = {
-        bombRate: 0.05,
+        bombRate: 0.2,
         bombMinVelocity: 50,
         bombMaxVelocity: 200,
-        invaderInitialVelocity: 25,
+        invaderInitialVelocity: 70,
         invaderAcceleration: 0,
         invaderDropDistance: 40,
         rocketVelocity: 400,
@@ -630,7 +630,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillStyle = '#006600';
     for(var i=0; i<this.invaders.length; i++) {
         var invader = this.invaders[i];
-        ctx.fillRect(invader.x - invader.width/2, invader.y - invader.height/2, invader.width, invader.height);
+        ctx.drawImage(invader.img(), invader.x - invader.width/2, invader.y - invader.height/2, invader.width, invader.height);
     }
 
     //  Draw bombs.
@@ -832,9 +832,16 @@ function Invader(x, y, rank, file, type, points) {
     this.rank = rank;
     this.file = file;
     this.type = type;
-    this.width = 18;
-    this.height = 14;
+    this.width = 25;
+    this.height = 20;
     this.points = points;
+    this.animateBool = 0;
+    this.img = function () {
+        var image = new Image();
+        this.animateBool = this.animateBool==0 ? 1 : 0;
+        image.src = 'img/invader_'+(this.animateBool)+'.jpg';
+        return image;
+    }
 }
 
 /*
