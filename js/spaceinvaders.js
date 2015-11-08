@@ -376,7 +376,7 @@ PlayState.prototype.enter = function(game) {
         for(var file = 0; file < files; file++) {
             invaders.push(new Invader(
                 (game.width / 2) + ((files/2 - file) * ranks * 60 / files),
-                (game.gameBounds.top + rank * 20),
+                (game.gameBounds.top + rank * 27),
                 rank, file, 'Invader', (ranks-rank) * this.config.pointsMultiplier ));
         }
     }
@@ -496,29 +496,31 @@ PlayState.prototype.update = function(game, dt) {
     }
     
     //  Check for rocket/invader collisions.
-    for(i=0; i<this.invaders.length; i++) {
-        var invader = this.invaders[i];
-        var bang = false;
+    if (this.rockets.length>0) {
+        for(i=0; i<this.invaders.length; i++) {
+            var invader = this.invaders[i];
+            var bang = false;
 
-        for(var j=0; j<this.rockets.length; j++){
-            var rocket = this.rockets[j];
+            for(var j=0; j<this.rockets.length; j++){
+                var rocket = this.rockets[j];
 
-            if(rocket.x >= (invader.x - invader.width/2) && rocket.x <= (invader.x + invader.width/2) &&
-                rocket.y >= (invader.y - invader.height/2) && rocket.y <= (invader.y + invader.height/2)) {
-                
-                //  Remove the rocket, set 'bang' so we don't process
-                //  this rocket again.
-                this.rockets.splice(j--, 1);
-                bang = true;
-                game.score += invader.points;
-                break;
+                if(rocket.x >= (invader.x - invader.width/2) && rocket.x <= (invader.x + invader.width/2) &&
+                    rocket.y >= (invader.y - invader.height/2) && rocket.y <= (invader.y + invader.height/2)) {
+                    
+                    //  Remove the rocket, set 'bang' so we don't process
+                    //  this rocket again.
+                    this.rockets.splice(j--, 1);
+                    bang = true;
+                    game.score += invader.points;
+                    break;
+                }
+            }
+            if(bang) {
+                this.invaders.splice(i--, 1);
+                game.sounds.playSound('bang');
             }
         }
-        if(bang) {
-            this.invaders.splice(i--, 1);
-            game.sounds.playSound('bang');
-        }
-    }
+    }  
 
     //  Find all of the front rank invaders.
     var frontRankInvaders = {};
@@ -557,35 +559,39 @@ PlayState.prototype.update = function(game, dt) {
     }
 
     //  Check for bomb/obstacle collisions.
-    for(var i=0; i<this.bombs.length; i++) {
-        var bomb = this.bombs[i];
-        for(var j=0; j<this.obstacles.length; j++) {
-            var obstacle = this.obstacles[j];
-            if(bomb.x >= (obstacle.x) && bomb.x <= (obstacle.x + obstacle.width) &&
-                    bomb.y >= (obstacle.y - obstacle.height/2) && bomb.y <= (obstacle.y + obstacle.height/2)) {
-                this.bombs.splice(i--, 1);
-                bang = true;
-                obstacle.lives--;
-                if (obstacle.lives<=0) {
-                    this.obstacles.splice(j--, 1);
-                    game.sounds.playSound('explosion');
+    if (this.obstacles.length>0) {
+        for(var i=0; i<this.bombs.length; i++) {
+            var bomb = this.bombs[i];
+            for(var j=0; j<this.obstacles.length; j++) {
+                var obstacle = this.obstacles[j];
+                if(bomb.x >= (obstacle.x) && bomb.x <= (obstacle.x + obstacle.width) &&
+                        bomb.y >= (obstacle.y - obstacle.height/2) && bomb.y <= (obstacle.y + obstacle.height/2)) {
+                    this.bombs.splice(i--, 1);
+                    bang = true;
+                    obstacle.lives--;
+                    if (obstacle.lives<=0) {
+                        this.obstacles.splice(j--, 1);
+                        game.sounds.playSound('explosion');
+                    }
                 }
             }
         }
     }
 
     //  Check for rocket/obstacle collisions.
-    for(var i=0; i<this.rockets.length; i++) {
-        var rocket = this.rockets[i];
-        for(var j=0; j<this.obstacles.length; j++) {
-            var obstacle = this.obstacles[j];
-            if(rocket.x >= (obstacle.x) && rocket.x <= (obstacle.x + obstacle.width) &&
-                    rocket.y >= (obstacle.y - obstacle.height/2) && rocket.y <= (obstacle.y + obstacle.height/2)) {
-                this.rockets.splice(i--, 1);
-                obstacle.lives--;
-                if (obstacle.lives<=0) {
-                    this.obstacles.splice(j--, 1);
-                    game.sounds.playSound('explosion');
+    if (this.obstacles.length>0) {
+        for(var i=0; i<this.rockets.length; i++) {
+            var rocket = this.rockets[i];
+            for(var j=0; j<this.obstacles.length; j++) {
+                var obstacle = this.obstacles[j];
+                if(rocket.x >= (obstacle.x) && rocket.x <= (obstacle.x + obstacle.width) &&
+                        rocket.y >= (obstacle.y - obstacle.height/2) && rocket.y <= (obstacle.y + obstacle.height/2)) {
+                    this.rockets.splice(i--, 1);
+                    obstacle.lives--;
+                    if (obstacle.lives<=0) {
+                        this.obstacles.splice(j--, 1);
+                        game.sounds.playSound('explosion');
+                    }
                 }
             }
         }
@@ -660,7 +666,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillStyle = '#F3F781';
     for(var i=0; i<this.rockets.length; i++) {
         var rocket = this.rockets[i];
-        ctx.fillRect(rocket.x, rocket.y - 2, 3, 16);
+        ctx.fillRect(rocket.x - 2, rocket.y - 8, 4, 16);
     }
 
     // Draw obstacles.
@@ -848,8 +854,8 @@ function Invader(x, y, rank, file, type, points) {
     this.rank = rank;
     this.file = file;
     this.type = type;
-    this.width = 25;
-    this.height = 20;
+    this.width = 30;
+    this.height = 25;
     this.points = points;
     this.animateBool = 0;
     this.img = function () {
