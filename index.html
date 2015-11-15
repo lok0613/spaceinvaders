@@ -1,101 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="myApp">
     <head>
         <title>Space Invaders</title>
-        <link rel="stylesheet" type="text/css" href="css/core.css">
-        <link rel="stylesheet" type="text/css" href="css/typeography.css">
-        <style>
-    
-            /* Styling needed for a fullscreen canvas and no scrollbars. */
-            body, html { 
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            }
-
-            #starfield {
-                width:100%;
-                height:100%;
-                z-index: -1;
-                position: absolute;
-                left: 0px;
-                top: 0px;
-            }
-            #gamecontainer {
-                width: 800px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            #gamecanvas { 
-                width: 800px;
-                height: 600px;
-            }
-            #gameCanvas {
-                border: 3px double red;
-                margin-top: 60px;
-            }
-            #info {
-                width: 800px;
-                margin-left: auto;
-                margin-right: auto;
-                color: white;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.css">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
     </head>
-    <body>
-        <div id="starfield"></div>
-        <div id="gamecontainer">
-        <canvas id="gameCanvas"></canvas>
+    <body layout="column" ng-controller="MainController">
+        <md-toolbar layout="row" style="background: rgb(63,81,181); color: rgba(255,255,255,0.87)">
+            <div class="md-toolbar-tools">
+              <h1>Space Invader: Lok Chun Wai (15005218D)</h1>
+            </div>
+            <md-button class="md-icon-button" aria-label="Settings">
+              Login
+            </md-button>
+        </md-toolbar>
+        <div layout="row" flex>
+            
+            <div layout="column" flex id="content">
+              <md-content layout="column" flex class="md-padding">
+                <div id="starfield"></div>
+                <div id="gamecontainer">
+                <canvas id="gameCanvas"></canvas>
+                </div>
+                <div id="info">
+                    <p><a id="muteLink" href="#" onclick="toggleMute()">mute</a></p>
+                </div>
+              </md-content>
+            </div>
+            <md-sidenav layout="column" class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="$mdMedia('gt-sm')">
+              <md-tabs md-dynamic-height md-border-bottom>
+                  <md-tab label="Game Setting" ngcontroller="GameSettingController">
+                    <md-content class="md-padding">
+                      <form>
+                        <label>Enemy Speed:</label>
+                        <md-slider flex min="0" max="5" ng-model="color.red" aria-label="red" id="red-slider" class>
+                        </md-slider>
+                      </form>
+                      <form>
+                        <md-input-container class="md-block">
+                            <label>Player's Credit</label>
+                            <input required type="number" name="rate" ng-model="player.lives" min="800"
+                                   max="4999" ng-pattern="/^1234$/"/>
+                            <div ng-messages="projectForm.rate.$error" multiple>
+                              <div ng-message="required">
+                                You've got to charge something! You can't just <b>give away</b> a Missile Defense
+                                System.
+                              </div>
+                              <div ng-message="min">
+                                You should charge at least $800 an hour. This job is a big deal... if you mess up,
+                                everyone dies!
+                              </div>
+                              <div ng-message="pattern">
+                                You should charge exactly $1,234.
+                              </div>
+                              <div ng-message="max">
+                                {{projectForm.rate.$viewValue | currency:"$":0}} an hour? That's a little ridiculous. I
+                                doubt event Bill Clinton could afford that.
+                              </div>
+                            </div>
+                        </md-input-container>
+                      </form>
+                    </md-content>
+                  </md-tab>
+                  <md-tab label="Ranking">
+                    <md-content class="md-padding">
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue. Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies mi.</p>
+                    </md-content>
+                  </md-tab>
+                  <md-tab label="Admin Setting">
+                    <md-content class="md-padding">
+                      <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
+                    </md-content>
+                  </md-tab>
+                </md-tabs>
+            </md-sidenav>
         </div>
-        <div id="info">
-            <p>Student Name: Lok Chun Wai</p><p>Student ID: 15005218D</p>
-            <p><a id="muteLink" href="#" onclick="toggleMute()">mute</a></p>
-        </div>
+        
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-aria.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.js"></script>
 
         <script src="js/starfield.js"></script>
         <script src="js/spaceinvaders.js"></script>
+        <script src="js/main.js"></script>
         <script>
-
-            //  Create the starfield.
-            var container = document.getElementById('starfield');
-            var starfield = new Starfield();
-            starfield.initialise(container);
-            starfield.start();
-
-            //  Setup the canvas.
-            var canvas = document.getElementById("gameCanvas");
-            canvas.width = 800;
-            canvas.height = 600;
-
-            //  Create the game.
-            var game = new Game();
-
-            //  Initialise it with the game canvas.
-            game.initialise(canvas);
-
-            //  Start the game.
-            game.start();
-
-            //  Listen for keyboard events.
-            window.addEventListener("keydown", function keydown(e) {
-                var keycode = e.which || window.event.keycode;
-                //  Supress further processing of left/right/space (37/29/32)
-                if(keycode == 37 || keycode == 39 || keycode == 32) {
-                    e.preventDefault();
-                }
-                game.keyDown(keycode);
-            });
-            window.addEventListener("keyup", function keydown(e) {
-                var keycode = e.which || window.event.keycode;
-                game.keyUp(keycode);
-            });
-
-            function toggleMute() {
-                game.mute();
-                document.getElementById("muteLink").innerText = game.sounds.mute ? "unmute" : "mute";
-            }
+            var game;
         </script>
     </body>
 </html>
