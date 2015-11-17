@@ -27,42 +27,32 @@
                 </div>
               </md-content>
             </div>
-            <md-sidenav layout="column" class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="$mdMedia('gt-sm')">
+            <md-sidenav layout="column" class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="true">
               <md-tabs md-dynamic-height md-border-bottom>
-                  <md-tab label="Game Setting" ngcontroller="GameSettingController">
-                    <md-content class="md-padding">
-                      <form>
-                        <label>Enemy Speed:</label>
-                        <md-slider flex min="0" max="5" ng-model="color.red" aria-label="red" id="red-slider" class>
+                  <md-tab label="Game Setting">
+                    <md-content class="md-padding" ng-controller="GameSettingController">
+                      <label>Enemy Speed: </label>
+                      <div layout>
+                        <md-slider flex ng-model="invaderVelocityLevel" min="0" max="5" aria-label="green" id="green-slider" class="md-accent" ng-change="setInvaderVelocity()">
                         </md-slider>
-                      </form>
-                      <form>
-                        <md-input-container class="md-block">
-                            <label>Player's Credit</label>
-                            <input required type="number" name="rate" ng-model="player.lives" min="800"
-                                   max="4999" ng-pattern="/^1234$/"/>
-                            <div ng-messages="projectForm.rate.$error" multiple>
-                              <div ng-message="required">
-                                You've got to charge something! You can't just <b>give away</b> a Missile Defense
-                                System.
-                              </div>
-                              <div ng-message="min">
-                                You should charge at least $800 an hour. This job is a big deal... if you mess up,
-                                everyone dies!
-                              </div>
-                              <div ng-message="pattern">
-                                You should charge exactly $1,234.
-                              </div>
-                              <div ng-message="max">
-                                {{projectForm.rate.$viewValue | currency:"$":0}} an hour? That's a little ridiculous. I
-                                doubt event Bill Clinton could afford that.
-                              </div>
-                            </div>
-                        </md-input-container>
-                      </form>
+                        <div flex="20" layout layout-align="center center">
+                          <input flex type="number" ng-model="invaderVelocityLevel" aria-label="green" aria-controls="green-slider" ng-change="setInvaderVelocity()">
+                        </div>
+                      </div>
+
+                      <label>Player Credit: </label>
+                      <div layout>
+                        <md-slider flex ng-model="playerLives" min="0" max="5" aria-label="green" id="green-slider" class="md-primary" ng-change="renderPlayerLives()">
+                        </md-slider>
+                        <div flex="20" layout layout-align="center center">
+                          <input flex type="number" ng-model="playerLives" aria-label="green" aria-controls="green-slider" ng-change="renderPlayerLives()">
+                        </div>
+                      </div>
+
+                      <md-button class="md-raised md-warn" ng-click="showEnemyArray($event)">Enemy Array</md-button>
                     </md-content>
                   </md-tab>
-                  <md-tab label="Ranking">
+                  <md-tab label="Ranking" ng-hide="fuck">
                     <md-content class="md-padding">
                       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue. Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies mi.</p>
                     </md-content>

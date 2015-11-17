@@ -2,10 +2,37 @@ var myApp = angular.module('myApp', ['ngMaterial']);
 
 myApp.controller('MainController', ['$scope', function ($scope) {
 	spaceinvader();
+	$scope.game = game;
 }])
 
-.controller('GameSettingController', ['$scope', function ($scope) {
+.controller('GameSettingController', ['$scope', '$mdDialog', function ($scope, $mdDialog) {
 
+    $scope.invaderVelocityLevel = 3;
+    $scope.playerLives = game.lives;
+
+    $scope.setInvaderVelocity = function () {
+        var actualVelocity = game.config.invaderVelocityLevel[$scope.invaderVelocityLevel-1];
+        for (var i=0; i<game.currentState().invaders.length; i++) {
+            game.currentState().invaders[i].invaderVelocity = actualVelocity;
+        }
+    }
+
+    $scope.renderPlayerLives = function () {
+        game.lives = $scope.playerLives;
+    }
+
+    $scope.showEnemyArray = function (ev) {
+        $mdDialog.show({
+          templateUrl: 'partial/enemyArray.tmpl.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose:true
+        }).then(function(answer) {
+          $scope.status = 'You said the information was "' + answer + '".';
+        }, function() {
+          $scope.status = 'You cancelled the dialog.';
+        });
+    }
 }]);
 
 var spaceinvader = function () {

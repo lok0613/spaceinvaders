@@ -45,7 +45,8 @@ function Game() {
         minObstacle: 1,
         maxObstacle: 5,
         pointsMultiplier: 10,
-        maxGameTime: 60 // seconds
+        maxGameTime: 60, // seconds
+        invaderVelocityLevel: [10, 20, 50, 70, 5000]
     };
 
     //  All state is in the variables below.
