@@ -14,15 +14,15 @@ function login($db, $config) {
         if ($rows) {
             $hash = $rows['password'];
             if (password_verify($_POST['password'], $hash)) {
-                render(['status' => '200']);
+                render(200);
             } else {
-                render(['status' => 'password not correct']);
+                render('password not correct');
             }
         } else {
-            render(['status' => 'user not exists']);
+            render('user not exists');
         }
     } catch (Exception $e) {
-        echo $e->getMessage();
+        render($e);
     }
 }
 
@@ -35,9 +35,9 @@ function forgotPassword($db, $config) {
     try {
         $results = $db->prepare($sql)->execute($param);
     } catch (Exception $e) {
-        echo $e->getMessage();
+        render($e)
     }
-    render($results);
+    render(200);
 }
 
 function resetPeter($db, $config) {
@@ -52,14 +52,14 @@ function resetPeter($db, $config) {
     try {
         $results = $db->prepare($sql)->execute($param);
     } catch (Exception $e) {
-        echo $e->getMessage();
+        render($e);
     }
     // send email
     $message = 'your predefiend password is: 123';
     try {
         $result = mail('lokcentral0613@gmail.com', 'asg2 comp test', $message);
      } catch (Exception $e) {
-        echo $e->getMessage();
+        render($e);
      }
-    render($result);
+    render(200);
 };

@@ -11,6 +11,15 @@ function getSettings($db, $config) {
     render($settings);
 }
 
-function setSetting($db, $config) {
-
+function updateSetting($db, $config) {
+    $param = ['name' => $_POST['name'], 'value' => (INT)$_POST['value']];
+    $sql = 'UPDATE settings SET value=:value WHERE name=:name';
+    try {
+        $results = $db->prepare($sql);
+        $results->execute($param);
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        render($e);
+    }
+    render(200);
 }
