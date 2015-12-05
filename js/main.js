@@ -12,9 +12,18 @@ myApp.controller('MainController', ['$scope', function ($scope) {
 
     $scope.setInvaderVelocity = function () {
         var actualVelocity = game.config.invaderVelocityLevel[$scope.invaderVelocityLevel-1];
-        for (var i=0; i<game.currentState().invaders.length; i++) {
-            game.currentState().invaders[i].invaderVelocity = actualVelocity;
-        }
+
+        // for (var i=0; i<game.currentState().invaders.length; i++) {
+            if (actualVelocity) {
+                game.currentState().invaderInitialVelocity = actualVelocity;
+                game.currentState().invaderCurrentVelocity = actualVelocity;
+                game.currentState().invaderVelocity.x = actualVelocity;
+            }
+        // }
+        // console.log('level', $scope.invaderVelocityLevel);
+        // console.log('actualVelocity', actualVelocity);
+        // console.log('init velocity', game.currentState().invaderInitialVelocity);
+        // console.log('------------------');
     }
 
     $scope.renderPlayerLives = function () {
