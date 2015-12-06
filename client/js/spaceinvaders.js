@@ -47,7 +47,8 @@ function Game() {
         pointsMultiplier: 10,
         maxGameTime: 60, // seconds
         invaderVelocityLevel: [10, 20, 50, 100, 5000],
-        lives: 3
+        lives: 3,
+        enemyMarks: []
     };
 
     //  All state is in the variables below.
@@ -374,12 +375,18 @@ PlayState.prototype.enter = function(game) {
     var ranks = this.config.invaderRanks[this.level];
     var files = this.config.invaderFiles[this.level];
     var invaders = [];
+    var count = -1;
+    console.log( game.config.enemyMarks[this.level])
     for(var rank = 0; rank < ranks; rank++){
-        for(var file = 0; file < files; file++) {
+        for(var file = files-1; file >= 0; file--) {
+            count++;
+            if (game.config.enemyMarks[this.level][count]==0) {
+              continue;
+            }
             invaders.push(new Invader(
                 (game.width / 2) + ((files/2 - file) * ranks * 60 / files),
                 (game.gameBounds.top + rank * 27),
-                rank, file, 'Invader', (ranks-rank) * this.config.pointsMultiplier ));
+                rank, file, 'Invader', game.config.enemyMarks[this.level][count] ));
         }
     }
     this.invaders = invaders;
@@ -639,6 +646,22 @@ PlayState.prototype.update = function(game, dt) {
         this.stopGameTimer(game);
         game.level += 1;
         game.moveToState(new LevelIntroState(game.level));
+        // submit to score history
+        var scoreHistory = {
+          "score": game.score,
+          "level": game.levelName[game.level],
+          "timestamp": Date.now(),
+        };
+        game.config.scoreHistory.push(scoreHistory);
+        var data = {
+          "model": "setting",
+          "action": "updateSetting",
+          "name": 'scoreHistory',
+          "value": JSON.stringify(game.config.scoreHistory)
+        }
+        $.post('/server/index.php?'+$.param(data), function (response) {
+          console.log(response);
+        });
     }
 };
 

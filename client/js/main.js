@@ -35,12 +35,17 @@ var myApp = angular.module('myApp', ['ngMaterial', 'ui.router'])
       $rootScope.invaderVelocityLevel = parseInt(data['invaderVelocityLevel']);
       $rootScope.playerLives = parseInt(data['lives']);
       $rootScope.scoreHistory = angular.fromJson(data['scoreHistory']);
+      $rootScope.easyEnemyArray = angular.fromJson(data['easyEnemyArray']);
+      $rootScope.hardEnemyArray = angular.fromJson(data['hardEnemyArray']);
       $rootScope.scoreHistory.sort( function (a, b) {
         return b.score-a.score;
       });
 
       setLives($rootScope.playerLives);
       setVelocity($rootScope.invaderVelocityLevel);
+      setScoreHistory($rootScope.scoreHistory);
+      setEasyEnemyArray($rootScope.easyEnemyArray);
+      setHardEnemyArray($rootScope.hardEnemyArray);
   })
 })
 
@@ -54,6 +59,9 @@ var myApp = angular.module('myApp', ['ngMaterial', 'ui.router'])
   $scope.scoreHistory = $rootScope.scoreHistory;
 
   $scope.setInvaderVelocity = function () {
+    if ($scope.invaderVelocityLevel>5 || $scope.invaderVelocityLevel<1) {
+      $scope.invaderVelocityLevel = 3;
+    }
     setVelocity($scope.invaderVelocityLevel);
     var data = {
       "model": "setting",
@@ -66,6 +74,9 @@ var myApp = angular.module('myApp', ['ngMaterial', 'ui.router'])
   };
 
   $scope.renderPlayerLives = function () {
+    if ($scope.playerLives>10 || $scope.playerLives<1) {
+      $scope.playerLives = 5;
+    }
     setLives($scope.playerLives);
     var data = {
       "model": "setting",
@@ -103,12 +114,30 @@ var myApp = angular.module('myApp', ['ngMaterial', 'ui.router'])
     $mdDialog.show(alert);
   };
 
-  $scope.restScore = function (ev) {
-    var data = {
-      "model": "setting",
-      "action": "resetScore",
-    };
-    $http.post('/server/index.php?'+$httpParamSerializer(data)).then( function (response) {
+  $scope.resetScore = function () {
+    var confirm = $mdDialog.confirm()
+          .title('Reset All Score')
+          .content('Are you sure ?')
+          .ok('Please do it!')
+          .cancel('No thanks!');
+    $mdDialog.show(confirm).then( function () {
+      var data = {
+        "model": "setting",
+        "action": "resetScore",
+      };
+      $http.post('/server/index.php?'+$httpParamSerializer(data)).then( function (response) {
+        $rootScope.scoreHistory = [];
+        setScoreHistory($rootScope.scoreHistory);
+        $scope.scoreHistory = $rootScope.scoreHistory;
+        var alert = $mdDialog.alert()
+          .title('Reset Score Success!')
+          .content('Reset Score Success!')
+          .ok('Close');
+        $mdDialog
+          .show(alert);
+      });
+    }, function () {
+      // do nothing
     });
   };
 
@@ -151,14 +180,12 @@ var myApp = angular.module('myApp', ['ngMaterial', 'ui.router'])
         "action": "resetPeter"
       };
       $http.post('/server/index.php?'+$httpParamSerializer(data)).then( function (response) {
-        if (200==response.data) {
-          var alert = $mdDialog.alert()
-            .title('Reset Password Success!')
-            .content('The password will send to cshfng@comp.polyu.edu.hk !')
-            .ok('Close');
-          $mdDialog
-            .show(alert);
-          }
+        var alert = $mdDialog.alert()
+          .title('Reset Password Success!')
+          .content('The password will send to cshfng@comp.polyu.edu.hk !')
+          .ok('Close');
+        $mdDialog
+          .show(alert);
       });
     }, function () {
       // do nothing
@@ -191,28 +218,51 @@ var myApp = angular.module('myApp', ['ngMaterial', 'ui.router'])
   }
 })
 
-.controller('EasyEnemyArrayController', function ($http, $scope, $mdDialog, $state) {
+.controller('EasyEnemyArrayController', function ($http, $scope, $mdDialog, $state, $httpParamSerializer, $rootScope, $window) {
+  var easyEnemys = $rootScope.easyEnemyArray;
+  $scope.easyEnemys = [];
+  for (var num in easyEnemys) {
+    $scope.easyEnemys.push({mark: easyEnemys[num]});
+  }
   $scope.go = function () {
+    var easyEnemys = [];
+    for (var obj in $scope.easyEnemys) {
+      easyEnemys.push($scope.easyEnemys[obj].mark);
+    }
     $mdDialog.hide();
     var data = {
       "model": "setting",
-      "action": "easyEmemyArray"
+      "action": "updateSetting",
+      "name": "easyEnemyArray",
+      "value": '['+easyEnemys+']'
     };
     $http.post('/server/index.php?'+$httpParamSerializer(data)).then( function (response) {
-      $state.go('root');
+      $window.location.reload();
     });
   };
 })
 
-.controller('HardEnemyArrayController', function ($http, $scope, $mdDialog, $state) {
+.controller('HardEnemyArrayController', function ($http, $scope, $mdDialog, $state, $httpParamSerializer, $rootScope, $window) {
+  var hardEnemys = $rootScope.hardEnemyArray;
+  $scope.hardEnemys = [];
+  for (var num in hardEnemys) {
+    $scope.hardEnemys.push({mark: hardEnemys[num]});
+  }
   $scope.go = function () {
+    var hardEnemys = [];
+    for (var obj in $scope.hardEnemys) {
+      hardEnemys.push($scope.hardEnemys[obj].mark);
+    }
+    console.log(hardEnemys)
     $mdDialog.hide();
     var data = {
       "model": "setting",
-      "action": "easyEmemyArray"
+      "action": "updateSetting",
+      "name": "hardEnemyArray",
+      "value": '['+hardEnemys+']'
     };
     $http.post('/server/index.php?'+$httpParamSerializer(data)).then( function (response) {
-      $state.go('root');
+      $window.location.reload();
     });
   };
 });
@@ -252,10 +302,6 @@ var spaceinvader = function () {
         game.keyUp(keycode);
     });
 
-    function toggleMute() {
-        game.mute();
-        document.getElementById("muteLink").innerText = game.sounds.mute ? "unmute" : "mute";
-    }
 }
 
 var setLives = function(lives) {
@@ -275,3 +321,14 @@ var setVelocity = function(velocity) {
     }
 };
 
+var setScoreHistory = function (score) {
+  game.config.scoreHistory = score;
+}
+
+var setEasyEnemyArray = function (enemy) {
+  game.config.enemyMarks[1] = enemy;
+};
+
+var setHardEnemyArray = function (enemy) {
+  game.config.enemyMarks[2] = enemy;
+};

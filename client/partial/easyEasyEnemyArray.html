@@ -1,16 +1,18 @@
-<md-toolbar ng-controller="EasyEnemyArrayController">
-  <div class="md-toolbar-tools">
-    <h2>Easy Enemy Array</h2>
-    <span flex></span>
-  </div>
-</md-toolbar>
-<md-dialog-content style="max-width:800px;max-height:810px; ">
-  <div class="md-dialog-content">
-    <md-content class="md-padding">
-      <form ng-submit="go()">
-
-        <md-button class="md-raised md-primary" ng-click="go()">Save</md-button>
-      </form>
-    </md-content>
-  </div>
-</md-dialog-content>
+<md-dialog aria-label="Mango (Fruit)" ng-cloak ng-controller="EasyEnemyArrayController">
+  <form ng-submit="go()">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Easy Enemy Array</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="max-width:800px;max-height:810px; ">
+        <div class="md-dialog-content">
+          <md-content class="md-padding" style="width: 600px;">
+              <input type="number" class="enemy" ng-repeat="easyEnemy in easyEnemys" ng-model="easyEnemy.mark" min="0"/>
+              <md-button class="md-raised md-primary">Save</md-button>
+            </md-content>
+          </div>
+      </md-dialog-content>
+  </form>
+</md-dialog>

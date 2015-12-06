@@ -25,7 +25,7 @@ function updateSetting($db, $config) {
 }
 
 function resetScore($db, $config) {
-    $param = ['name' => 'scoreHistory', 'value' => '{}'];
+    $param = ['name' => 'scoreHistory', 'value' => '[]'];
     $sql = 'UPDATE settings SET value=:value WHERE name=:name';
     try {
         $results = $db->prepare($sql);

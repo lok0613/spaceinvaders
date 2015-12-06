@@ -3,7 +3,7 @@
     <md-content class="md-padding">
       <label>Enemy Speed: </label>
       <div layout>
-        <md-slider flex ng-model="invaderVelocityLevel" min="0" max="5" aria-label="green" id="green-slider" class="md-accent" ng-change="setInvaderVelocity()">
+        <md-slider flex ng-model="invaderVelocityLevel" min="1" max="5" aria-label="green" id="green-slider" class="md-accent" ng-change="setInvaderVelocity()">
         </md-slider>
         <div flex="20" layout layout-align="center center">
           <input flex type="number" ng-model="invaderVelocityLevel" aria-label="green" aria-controls="green-slider" ng-change="setInvaderVelocity()">
@@ -12,7 +12,7 @@
 
       <label>Player Credit: </label>
       <div layout>
-        <md-slider flex ng-model="playerLives" min="0" max="10" aria-label="green" id="`" class="md-primary" ng-change="renderPlayerLives()">
+        <md-slider flex ng-model="playerLives" min="1" max="10" aria-label="green" id="`" class="md-primary" ng-change="renderPlayerLives()">
         </md-slider>
         <div flex="20" layout layout-align="center center">
           <input flex type="number" ng-model="playerLives" aria-label="green" aria-controls="green-slider" ng-change="renderPlayerLives()">
@@ -30,17 +30,19 @@
         <thead>
           <th>Rank</th>
           <th>Score</th>
+          <th>Level</th>
           <th>Datetime</th>
         </thead>
         <tbody>
           <tr ng-repeat="mark in scoreHistory" ng-class="$index==0 ? 'highest-score' : ''">
             <td>{{ $index+1 }}</td>
             <td ng-class="">{{ mark.score }}</td>
-            <td>{{ mark.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td>{{ mark.level }}</td>
+            <td style="font-size: 9pt">{{ mark.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
           </tr>
         </tbody>
       </table>
-      <md-button class="md-raised md-warn" ng-click="resetScroe()">Reset All Score</md-button>
+      <md-button class="md-raised md-warn" ng-click="resetScore()">Reset All Score</md-button>
     </md-content>
   </md-tab>
   <md-tab label="Account Setting">
