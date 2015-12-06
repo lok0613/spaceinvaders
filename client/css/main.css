@@ -18,7 +18,7 @@ a:focus {
     margin-right: auto;
     z-index: 1;
 }
-#gamecanvas { 
+#gamecanvas {
     width: 800px;
     height: 600px;
 }
@@ -39,4 +39,11 @@ md-content {
 /* override materialize */
 .md-tab {
 	text-transform: inherit;
+}
+.table {
+    width: 100%;
+    text-align: left;
+}
+.highest-score {
+    color: red;
 }

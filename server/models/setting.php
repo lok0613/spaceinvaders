@@ -6,7 +6,7 @@ function getSettings($db, $config) {
     $results = $db->prepare($sql);
     $results->execute();
     while ($row = $results->fetch()) {
-        $settings[] = [$row['name'] => $row['value']];
+        $settings[$row['name']] = $row['value'];
     }
     render($settings);
 }

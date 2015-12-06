@@ -1,0 +1,17 @@
+<md-tabs md-dynamic-height md-border-bottom>
+  <md-tab label="Login">
+    <md-content class="md-padding">
+        <form ng-submit="login()">
+            <md-input-container>
+              <label>Name</label>
+              <input ng-model="user.username" type="name">
+            </md-input-container>
+            <md-input-container>
+              <label>Password</label>
+              <input ng-model="user.password" type="password">
+            </md-input-container>
+            <md-button class="md-raised md-primary">Login</md-button>
+        </form>
+    </md-content>
+</md-tab>
+</md-tabs>

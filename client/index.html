@@ -10,12 +10,9 @@
             <div class="md-toolbar-tools">
               <h1>Space Invader: Lok Chun Wai (15005218D)</h1>
             </div>
-            <md-button class="md-icon-button" aria-label="Settings">
-              Login
-            </md-button>
         </md-toolbar>
         <div layout="row" flex>
-            
+
             <div layout="column" flex id="content">
               <md-content layout="column" flex class="md-padding">
                 <div id="starfield"></div>
@@ -27,50 +24,17 @@
                 </div>
               </md-content>
             </div>
-            <md-sidenav layout="column" class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="true">
-              <md-tabs md-dynamic-height md-border-bottom>
-                  <md-tab label="Game Setting">
-                    <md-content class="md-padding" ng-controller="GameSettingController">
-                      <label>Enemy Speed: </label>
-                      <div layout>
-                        <md-slider flex ng-model="invaderVelocityLevel" min="0" max="5" aria-label="green" id="green-slider" class="md-accent" ng-change="setInvaderVelocity()">
-                        </md-slider>
-                        <div flex="20" layout layout-align="center center">
-                          <input flex type="number" ng-model="invaderVelocityLevel" aria-label="green" aria-controls="green-slider" ng-change="setInvaderVelocity()">
-                        </div>
-                      </div>
+            <md-sidenav layout="column" class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="true" ui-view="sidebar">
 
-                      <label>Player Credit: </label>
-                      <div layout>
-                        <md-slider flex ng-model="playerLives" min="0" max="5" aria-label="green" id="green-slider" class="md-primary" ng-change="renderPlayerLives()">
-                        </md-slider>
-                        <div flex="20" layout layout-align="center center">
-                          <input flex type="number" ng-model="playerLives" aria-label="green" aria-controls="green-slider" ng-change="renderPlayerLives()">
-                        </div>
-                      </div>
-
-                      <md-button class="md-raised md-warn" ng-click="showEnemyArray($event)">Enemy Array</md-button>
-                    </md-content>
-                  </md-tab>
-                  <md-tab label="Ranking" ng-hide="fuck">
-                    <md-content class="md-padding">
-                      <p>Ranking</p>
-                    </md-content>
-                  </md-tab>
-                  <md-tab label="Admin Setting">
-                    <md-content class="md-padding">
-                      <p>Admin Setting</p>
-                    </md-content>
-                  </md-tab>
-                </md-tabs>
             </md-sidenav>
         </div>
-        
+
 
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-aria.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.js"></script>
+        <script src="vendor/angular-ui-router/release/angular-ui-router.min.js"></script>
 
         <script src="js/starfield.js"></script>
         <script src="js/spaceinvaders.js"></script>

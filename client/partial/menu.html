@@ -1,0 +1,48 @@
+<md-tabs md-dynamic-height md-border-bottom>
+  <md-tab label="Game Setting">
+    <md-content class="md-padding">
+      <label>Enemy Speed: </label>
+      <div layout>
+        <md-slider flex ng-model="invaderVelocityLevel" min="0" max="5" aria-label="green" id="green-slider" class="md-accent" ng-change="setInvaderVelocity()">
+        </md-slider>
+        <div flex="20" layout layout-align="center center">
+          <input flex type="number" ng-model="invaderVelocityLevel" aria-label="green" aria-controls="green-slider" ng-change="setInvaderVelocity()">
+        </div>
+      </div>
+
+      <label>Player Credit: </label>
+      <div layout>
+        <md-slider flex ng-model="playerLives" min="0" max="5" aria-label="green" id="`" class="md-primary" ng-change="renderPlayerLives()">
+        </md-slider>
+        <div flex="20" layout layout-align="center center">
+          <input flex type="number" ng-model="playerLives" aria-label="green" aria-controls="green-slider" ng-change="renderPlayerLives()">
+        </div>
+      </div>
+
+      <md-button class="md-raised md-warn" ng-click="showEnemyArray($event)">Enemy Array</md-button>
+    </md-content>
+  </md-tab>
+  <md-tab label="Ranking">
+    <md-content class="md-padding">
+      <table class="table">
+        <thead>
+          <th>Rank</th>
+          <th>Score</th>
+          <th>Datetime</th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="mark in scoreHistory" ng-class="$index==0 ? 'highest-score' : ''">
+            <td>{{ $index+1 }}</td>
+            <td ng-class="">{{ mark.score }}</td>
+            <td>{{ mark.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </md-content>
+  </md-tab>
+  <md-tab label="Admin Setting">
+    <md-content class="md-padding">
+      <p>Admin Setting</p>
+    </md-content>
+  </md-tab>
+</md-tabs>

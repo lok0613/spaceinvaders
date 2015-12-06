@@ -5,7 +5,7 @@ function get() {
 }
 
 function login($db, $config) {
-    $param = ['username' => $_POST['username']];
+    $param = ['username' => $_REQUEST['username']];
     $sql = 'SELECT id, password FROM users WHERE username=:username';
     try {
         $results = $db->prepare($sql);
@@ -13,7 +13,7 @@ function login($db, $config) {
         $rows = $results->fetch();
         if ($rows) {
             $hash = $rows['password'];
-            if (password_verify($_POST['password'], $hash)) {
+            if (password_verify($_REQUEST['password'], $hash)) {
                 render(200);
             } else {
                 render('password not correct');
@@ -35,7 +35,7 @@ function forgotPassword($db, $config) {
     try {
         $results = $db->prepare($sql)->execute($param);
     } catch (Exception $e) {
-        render($e)
+        render($e);
     }
     render(200);
 }
