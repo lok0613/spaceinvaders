@@ -27,10 +27,13 @@ function login($db, $config) {
 }
 
 function forgotPassword($db, $config) {
-    $password = $_POST['password'];
-    $userId = $_POST['userId'];
+    $password = $_REQUEST['password'];
+    $param = ['username' => $config['peter']['username']];
+    $sql = 'SELECT id FROM users WHERE username=:username;';
+    $results = $db->prepare($sql);
+    $peterId = $results->execute($param);
     $password = password_hash($password, PASSWORD_DEFAULT);
-    $param = ['password' => $password, 'id' => $userId];
+    $param = ['password' => $password, 'id' => $peterId];
     $sql = 'UPDATE users SET password=:password WHERE id=:id';
     try {
         $results = $db->prepare($sql)->execute($param);

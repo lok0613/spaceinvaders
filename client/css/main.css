@@ -47,3 +47,6 @@ md-content {
 .highest-score {
     color: red;
 }
+.enemy {
+    width: 50px;
+}

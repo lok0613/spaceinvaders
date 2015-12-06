@@ -12,14 +12,16 @@
 
       <label>Player Credit: </label>
       <div layout>
-        <md-slider flex ng-model="playerLives" min="0" max="5" aria-label="green" id="`" class="md-primary" ng-change="renderPlayerLives()">
+        <md-slider flex ng-model="playerLives" min="0" max="10" aria-label="green" id="`" class="md-primary" ng-change="renderPlayerLives()">
         </md-slider>
         <div flex="20" layout layout-align="center center">
           <input flex type="number" ng-model="playerLives" aria-label="green" aria-controls="green-slider" ng-change="renderPlayerLives()">
         </div>
       </div>
 
-      <md-button class="md-raised md-warn" ng-click="showEnemyArray($event)">Enemy Array</md-button>
+      <md-button class="md-raised md-warn" ng-click="showEasyEnemyArray($event)">Easy Enemy Array</md-button>
+
+      <md-button class="md-raised md-warn" ng-click="showHardEnemyArray($event)">Hard Enemy Array</md-button>
     </md-content>
   </md-tab>
   <md-tab label="Ranking">
@@ -38,11 +40,13 @@
           </tr>
         </tbody>
       </table>
+      <md-button class="md-raised md-warn" ng-click="resetScroe()">Reset All Score</md-button>
     </md-content>
   </md-tab>
-  <md-tab label="Admin Setting">
+  <md-tab label="Account Setting">
     <md-content class="md-padding">
-      <p>Admin Setting</p>
+      <p>Account Setting</p>
+      <md-button class="md-raised md-primary" ng-click="forgotPassword($event)">Forgot Password</md-button>
     </md-content>
   </md-tab>
 </md-tabs>

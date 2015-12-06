@@ -46,7 +46,8 @@ function Game() {
         maxObstacle: 5,
         pointsMultiplier: 10,
         maxGameTime: 60, // seconds
-        invaderVelocityLevel: [10, 20, 50, 200, 5000]
+        invaderVelocityLevel: [10, 20, 50, 100, 5000],
+        lives: 3
     };
 
     //  All state is in the variables below.
@@ -274,7 +275,7 @@ WelcomeState.prototype.keyDown = function(game, keyCode) {
         //  Space starts the game.
         game.level = game.pendingLevel;
         game.score = 0;
-        game.lives = 3;
+        game.lives = game.config.lives;
         game.moveToState(new LevelIntroState(game.level));
     }
 };
@@ -306,7 +307,7 @@ GameOverState.prototype.draw = function(game, dt, ctx) {
 GameOverState.prototype.keyDown = function(game, keyCode) {
     if(keyCode == 32) /*space*/ {
         //  Space restarts the game.
-        game.lives = 3;
+        game.lives = game.config.lives;
         game.score = 0;
         game.moveToState(new WelcomeState());
     }
